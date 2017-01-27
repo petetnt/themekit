@@ -1,5 +1,5 @@
-hash: c066f2443936bdf20522f14889145c819416da3916789fdd293693264a330f65
-updated: 2017-01-23T12:18:18.012154506-05:00
+hash: d8a6e574d834c9060bd6fe648b579cd1c5dbb2107e43cf493e4c7c092533d3d4
+updated: 2017-01-26T18:27:14.130132321-05:00
 imports:
 - name: github.com/caarlos0/env
   version: d0de832ed2fbc4e7bfaa30ab5cf0b3417d15f529
@@ -32,6 +32,10 @@ imports:
   version: b83537d79690b75cac5e021b036ae16792bf0f20
 - name: github.com/spf13/viper
   version: 670c42a85b2a2215949acd943cb8f11add317e3f
+- name: github.com/vbauerster/mpb
+  version: 2a03713cc377ead01e9d29a45055e4158c9662f6
+  subpackages:
+  - cwriter
 - name: golang.org/x/sys
   version: 8d1157a435470616f975ff9bb013bea8d0962067
   subpackages:

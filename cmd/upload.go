@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/spf13/cobra"
+	"github.com/vbauerster/mpb"
 
 	"github.com/Shopify/themekit/kit"
 )
@@ -50,20 +51,24 @@ func upload(client kit.ThemeClient, filenames []string, wg *sync.WaitGroup) {
 		}
 	}
 
+	bar := newProgressBar(len(localAssets)-2, client.Config.Environment)
 	for _, asset := range localAssets {
 		if asset.Key == settingsDataKey {
 			continue
 		}
 		wg.Add(1)
-		go performUpload(client, asset, wg)
+		go performUpload(client, asset, bar, wg)
 	}
 }
 
-func performUpload(client kit.ThemeClient, asset kit.Asset, wg *sync.WaitGroup) {
+func performUpload(client kit.ThemeClient, asset kit.Asset, bar *mpb.Bar, wg *sync.WaitGroup) {
+	defer wg.Done()
+	defer incBar(bar)
+
 	resp, err := client.UpdateAsset(asset)
 	if err != nil {
 		kit.LogErrorf("[%s]%s", kit.GreenText(client.Config.Environment), err)
-	} else {
+	} else if verbose {
 		kit.Printf(
 			"[%s] Successfully performed Update on file %s from %s",
 			kit.GreenText(client.Config.Environment),
@@ -71,7 +76,6 @@ func performUpload(client kit.ThemeClient, asset kit.Asset, wg *sync.WaitGroup) 
 			kit.YellowText(resp.Host),
 		)
 	}
-	wg.Done()
 }
 
 func uploadSettingsData(client kit.ThemeClient, filenames []string, wg *sync.WaitGroup) {
@@ -86,7 +90,7 @@ func uploadSettingsData(client kit.ThemeClient, filenames []string, wg *sync.Wai
 			return
 		}
 		wg.Add(1)
-		go performUpload(client, asset, wg)
+		go performUpload(client, asset, nil, wg)
 	}
 
 	if len(filenames) == 0 {
